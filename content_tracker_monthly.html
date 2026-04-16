@@ -1,0 +1,231 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Calibri', sans-serif; }
+  body { background: transparent; }
+  .tracker-wrap { padding: 1rem 0.5rem 2rem; }
+  .tracker-header { text-align: center; margin-bottom: 1.5rem; }
+  .tracker-header h1 { font-size: 22px; font-weight: 500; color: #b07a8a; letter-spacing: 0.5px; }
+  .tracker-header p { font-size: 13px; color: #c9a0a8; margin-top: 4px; }
+
+  .month-nav { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 1.5rem; }
+  .month-nav button { background: #fde8ee; border: 0.5px solid #f0b8c8; color: #b07a8a; font-family: 'Calibri', sans-serif; font-size: 14px; padding: 6px 14px; border-radius: 20px; cursor: pointer; }
+  .month-nav button:hover { background: #f9cad8; }
+  .month-nav span { font-size: 16px; font-weight: 500; color: #b07a8a; min-width: 140px; text-align: center; }
+
+  .summary-bar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 1.5rem; }
+  .sum-card { background: #fff5f7; border: 0.5px solid #f5c8d4; border-radius: 10px; padding: 10px 12px; text-align: center; }
+  .sum-card .label { font-size: 12px; color: #c9a0a8; margin-bottom: 4px; }
+  .sum-card .val { font-size: 20px; font-weight: 500; color: #b07a8a; }
+
+  .char-card { background: #fffafc; border: 0.5px solid #f0d0da; border-radius: 14px; padding: 1rem 1.1rem; margin-bottom: 1rem; }
+  .char-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .char-avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 500; color: #fff; flex-shrink: 0; }
+  .char-name { font-size: 16px; font-weight: 500; color: #b07a8a; }
+  .status-badge { margin-left: auto; font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: 500; }
+  .badge-low { background: #fde8ee; color: #c05a72; border: 0.5px solid #f5b8c8; }
+  .badge-enough { background: #eaf6ee; color: #4a9c68; border: 0.5px solid #b8e0c8; }
+
+  .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+  .content-box { background: #fff5f8; border: 0.5px solid #f0d0da; border-radius: 10px; padding: 10px; }
+  .content-box .ct-label { font-size: 11px; color: #c9a0a8; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .content-box .ct-type { font-size: 13px; font-weight: 500; color: #b07a8a; margin-bottom: 8px; }
+
+  .field-row { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+  .field-row label { font-size: 12px; color: #c9a0a8; min-width: 70px; }
+  .field-row input[type="date"] { flex: 1; font-family: 'Calibri', sans-serif; font-size: 12px; border: 0.5px solid #f0c8d4; border-radius: 6px; padding: 4px 6px; background: #fff; color: #b07a8a; outline: none; }
+  .field-row input[type="number"] { width: 60px; font-family: 'Calibri', sans-serif; font-size: 12px; border: 0.5px solid #f0c8d4; border-radius: 6px; padding: 4px 6px; background: #fff; color: #b07a8a; outline: none; }
+  .field-row select { flex: 1; font-family: 'Calibri', sans-serif; font-size: 12px; border: 0.5px solid #f0c8d4; border-radius: 6px; padding: 4px 6px; background: #fff; color: #b07a8a; outline: none; cursor: pointer; }
+
+  .remaining-pill { display: inline-block; font-size: 12px; padding: 2px 10px; border-radius: 20px; font-weight: 500; margin-top: 2px; }
+  .rem-ok { background: #eaf6ee; color: #4a9c68; }
+  .rem-low { background: #fde8ee; color: #c05a72; }
+  .rem-none { background: #fde8ee; color: #c05a72; }
+
+  .notes-row { margin-top: 8px; }
+  .notes-row label { font-size: 12px; color: #c9a0a8; display: block; margin-bottom: 4px; }
+  .notes-row textarea { width: 100%; font-family: 'Calibri', sans-serif; font-size: 12px; border: 0.5px solid #f0c8d4; border-radius: 8px; padding: 6px 8px; background: #fff; color: #b07a8a; resize: vertical; min-height: 48px; outline: none; }
+
+  .divider { height: 0.5px; background: #f0d0da; margin: 10px 0; }
+</style>
+
+<div class="tracker-wrap">
+  <h2 class="sr-only" style="position:absolute;left:-9999px">Monthly Content Tracker for Characters</h2>
+
+  <div class="tracker-header">
+    <h1>✦ Content Tracker</h1>
+    <p>Monthly scheduling overview — Photos &amp; Videos</p>
+  </div>
+
+  <div class="month-nav">
+    <button onclick="changeMonth(-1)">&#8592;</button>
+    <span id="monthLabel"></span>
+    <button onclick="changeMonth(1)">&#8594;</button>
+  </div>
+
+  <div class="summary-bar">
+    <div class="sum-card">
+      <div class="label">Total Photo Rem.</div>
+      <div class="val" id="totalPhoto">0</div>
+    </div>
+    <div class="sum-card">
+      <div class="label">Total Video Rem.</div>
+      <div class="val" id="totalVideo">0</div>
+    </div>
+    <div class="sum-card">
+      <div class="label">Low on Content</div>
+      <div class="val" id="totalLow">0</div>
+    </div>
+  </div>
+
+  <div id="charCards"></div>
+</div>
+
+<script>
+const CHARS = ['Jenna','Lila','Jill','Olivia','Hana','Kim'];
+const COLORS = ['#e8a0b4','#d4a0c8','#a0b4e8','#a0d4c8','#e8c4a0','#c8d4a0'];
+const STATUSES = ['Needs Review','Scheduled','Published','Failed'];
+const STATUS_COLORS = {'Needs Review':'#f5d08a','Scheduled':'#a0c8f0','Published':'#a0d4b0','Failed':'#f0a0a0'};
+
+let currentDate = new Date();
+let currentMonth = currentDate.getMonth();
+let currentYear = currentDate.getFullYear();
+
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+function getKey(char, field) {
+  return `tracker_${currentYear}_${currentMonth}_${char}_${field}`;
+}
+function save(char, field, val) {
+  localStorage.setItem(getKey(char, field), val);
+}
+function load(char, field, def) {
+  return localStorage.getItem(getKey(char, field)) ?? def;
+}
+
+function getRemaining(char, type) {
+  const scheduled = load(char, type+'_scheduled_date', '');
+  const remaining = parseInt(load(char, type+'_remaining', '0')) || 0;
+  return { scheduled, remaining };
+}
+
+function isLow(char) {
+  const pr = parseInt(load(char, 'photo_remaining', '0')) || 0;
+  const vr = parseInt(load(char, 'video_remaining', '0')) || 0;
+  return pr < 5 || vr < 5;
+}
+
+function renderSummary() {
+  let tp = 0, tv = 0, low = 0;
+  CHARS.forEach(c => {
+    tp += parseInt(load(c, 'photo_remaining', '0')) || 0;
+    tv += parseInt(load(c, 'video_remaining', '0')) || 0;
+    if (isLow(c)) low++;
+  });
+  document.getElementById('totalPhoto').textContent = tp;
+  document.getElementById('totalVideo').textContent = tv;
+  document.getElementById('totalLow').textContent = low;
+}
+
+function remClass(n) {
+  if (n === 0) return 'rem-none';
+  if (n < 5) return 'rem-low';
+  return 'rem-ok';
+}
+
+function renderCards() {
+  const container = document.getElementById('charCards');
+  container.innerHTML = '';
+  CHARS.forEach((char, idx) => {
+    const card = document.createElement('div');
+    card.className = 'char-card';
+
+    const low = isLow(char);
+    const pRem = parseInt(load(char, 'photo_remaining', '0')) || 0;
+    const vRem = parseInt(load(char, 'video_remaining', '0')) || 0;
+
+    card.innerHTML = `
+      <div class="char-header">
+        <div class="char-avatar" style="background:${COLORS[idx]}">${char[0]}</div>
+        <span class="char-name">${char}</span>
+        <span class="status-badge ${low ? 'badge-low' : 'badge-enough'}">${low ? 'Low Content' : 'Enough Content'}</span>
+      </div>
+      <div class="content-grid">
+        <div class="content-box">
+          <div class="ct-label">Photo Content</div>
+          <div class="field-row">
+            <label>Sched. Until</label>
+            <input type="date" id="${char}_photo_date" value="${load(char,'photo_scheduled_date','')}" onchange="handleChange('${char}','photo_scheduled_date',this.value)">
+          </div>
+          <div class="field-row">
+            <label>Remaining</label>
+            <input type="number" id="${char}_photo_rem" min="0" value="${pRem}" onchange="handleChange('${char}','photo_remaining',this.value)">
+            <span class="remaining-pill ${remClass(pRem)}" id="${char}_photo_pill">${pRem} left</span>
+          </div>
+          <div class="field-row">
+            <label>Status</label>
+            <select id="${char}_photo_status" onchange="handleChange('${char}','photo_status',this.value)" style="background:${STATUS_COLORS[load(char,'photo_status','Needs Review')] || '#fff'}">
+              ${STATUSES.map(s=>`<option value="${s}" ${load(char,'photo_status','Needs Review')===s?'selected':''}>${s}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+        <div class="content-box">
+          <div class="ct-label">Video Content</div>
+          <div class="field-row">
+            <label>Sched. Until</label>
+            <input type="date" id="${char}_video_date" value="${load(char,'video_scheduled_date','')}" onchange="handleChange('${char}','video_scheduled_date',this.value)">
+          </div>
+          <div class="field-row">
+            <label>Remaining</label>
+            <input type="number" id="${char}_video_rem" min="0" value="${vRem}" onchange="handleChange('${char}','video_remaining',this.value)">
+            <span class="remaining-pill ${remClass(vRem)}" id="${char}_video_pill">${vRem} left</span>
+          </div>
+          <div class="field-row">
+            <label>Status</label>
+            <select id="${char}_video_status" onchange="handleChange('${char}','video_status',this.value)" style="background:${STATUS_COLORS[load(char,'video_status','Needs Review')] || '#fff'}">
+              ${STATUSES.map(s=>`<option value="${s}" ${load(char,'video_status','Needs Review')===s?'selected':''}>${s}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="notes-row">
+        <label>Notes for ${char}</label>
+        <textarea id="${char}_notes" placeholder="Add notes here..." onchange="handleChange('${char}','notes',this.value)">${load(char,'notes','')}</textarea>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+  renderSummary();
+}
+
+function handleChange(char, field, val) {
+  save(char, field, val);
+  if (field === 'photo_remaining') {
+    const n = parseInt(val) || 0;
+    const pill = document.getElementById(`${char}_photo_pill`);
+    pill.textContent = n + ' left';
+    pill.className = 'remaining-pill ' + remClass(n);
+  }
+  if (field === 'video_remaining') {
+    const n = parseInt(val) || 0;
+    const pill = document.getElementById(`${char}_video_pill`);
+    pill.textContent = n + ' left';
+    pill.className = 'remaining-pill ' + remClass(n);
+  }
+  if (field.endsWith('_status')) {
+    const sel = document.getElementById(`${char}_${field.includes('photo') ? 'photo' : 'video'}_status`);
+    sel.style.background = STATUS_COLORS[val] || '#fff';
+  }
+  renderSummary();
+}
+
+function changeMonth(dir) {
+  currentMonth += dir;
+  if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+  if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+  document.getElementById('monthLabel').textContent = `${MONTHS[currentMonth]} ${currentYear}`;
+  renderCards();
+}
+
+document.getElementById('monthLabel').textContent = `${MONTHS[currentMonth]} ${currentYear}`;
+renderCards();
+</script>
